@@ -32,6 +32,14 @@ public class Iperfer {
 
 
 	}
+	
+	////initialize the counter
+		static int count = 0;
+		static double rate = 0;
+	public static void stat() {
+		//Print stats
+		System.out.println("sent=" + count + " KB rate=" + rate + " Mbps");
+	}
 
 	public static void runClient(String[] args) throws IOException {
 
@@ -60,6 +68,10 @@ public class Iperfer {
 		String host = args[2];
 		double time = Double.parseDouble(args[6]);
 
+		/*//initialize the counter
+		int count = 0;
+		double rate = 0;*/
+
 		// Check the port number
 		if (portNumber < 1024 || portNumber > 65535) {
 			System.err.println("Error: port number must be in the range 1024 to 65535");
@@ -74,8 +86,8 @@ public class Iperfer {
 		TimerTask task = new TimerTask() {
 			public void run() {
 				//System.out.println("Task performed on: " + new Date() + "n" + "Thread's name: " + Thread.currentThread().getName());
-
 				// TODO Print something
+				stat();
 				System.exit(0);
 			}
 		};
@@ -105,7 +117,9 @@ public class Iperfer {
 		timer.schedule(task, ((int)time * 1000));
 
 		while(true) {
-			// Do the client program
+			// Count up at every 1000 byte
+			count++;
+			rate = count / time / 1000 * 8;
 			// Write 1000 bytes to the writer
 			writer.print(sendString);
 		}
@@ -148,10 +162,50 @@ public class Iperfer {
 	public static void runServer(String[] args) throws IOException {
 
 		// Check args
-		if (args == null || args.length != 5 || args[3].equals("-p")) {
+		if (args == null || args.length != 3 || !args[1].equals("-p")) {
 			System.err.println("Error: invalid arguments");
 			System.exit(1);
 		}
+
+		// Parse the arguments
+		int portNumber = Integer.parseInt(args[2]);
+
+		// Check the port number
+		if (portNumber < 1024 || portNumber > 65535) {
+			System.err.println("Error: port number must be in the range 1024 to 65535");
+			System.exit(1);
+		}
+
+		//1. Create a ServerSocket that listens on the specified port
+		ServerSocket serverSoc = new ServerSocket(portNumber);
+		System.out.println("Waiting for client connections");
+
+		//2. Block until a client requests a connection to this application
+		Socket clientSoc = serverSoc.accept();
+
+		//3. Get handles to the output and input stream of the socket
+		DataOutputStream outStream = new DataOutputStream(clientSoc.getOutputStream());
+		PrintWriter writer = new PrintWriter(outStream, true);
+
+		DataInputStream inStream = new DataInputStream(clientSoc.getInputStream());
+		BufferedReader reader = new BufferedReader(new InputStreamReader(clientSoc.getInputStream()));
+
+		System.out.println("Connection established\n");
+		String text;
+
+		//4. Block until you read a line from the client (Incoming data can read from the input stream)
+		//5. Echo back the line read from the client (Write the incoming data to the output stream)
+		//5a. Read data bytes sent from client using the input stream
+		//5b. Print the data received to the standard output
+		//5c. Send back the data received using the output stream
+		while ((text = reader.readLine()) != null){
+			System.out.println("Text received ==> " + text);
+			writer.println(text);
+		}
+
+		// Close sockets
+		clientSoc.close();
+		serverSoc.close();
 
 /*
 
