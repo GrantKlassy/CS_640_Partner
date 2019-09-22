@@ -3,3 +3,4 @@ iperfer:
 
 clean:
 	rm *.class
+	rm TMP_IP

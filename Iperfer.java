@@ -40,6 +40,10 @@ public class Iperfer {
 			System.err.println("Error: invalid arguments");
 			System.exit(1);
 		}
+
+		// FIXME
+		System.out.println("Hitting the end of main()");
+		System.exit(0);
 	}
 
 	public static void stat() {
@@ -89,12 +93,10 @@ public class Iperfer {
 		DataInputStream inStream = new DataInputStream(clientSoc.getInputStream());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inStream));
 
-
-		// TODO Figure out how to send all zeros
 		// https://stackoverflow.com/questions/1176135/socket-send-and-receive-byte-array
 		// https://stackoverflow.com/questions/16475457/how-to-initailize-byte-array-of-100-bytes-in-java-with-all-0s
 		byte[] zeros = new byte[1000];
-		Arrays.fill( zeros, (byte)0);
+		Arrays.fill(zeros, (byte)0);
 
 		// Schedule the timer task to start
 		timer.schedule(task, ((int)time * 1000));
@@ -111,12 +113,10 @@ public class Iperfer {
 			outStream.write(zeros);
 		}
 
-		System.out.println("CLIENT DONE SENDING");
+		// FIXME What do we have to close?
 		inStream.close();
 		outStream.close();
 		clientSoc.close();
-
-
 
 	}
 
@@ -153,63 +153,24 @@ public class Iperfer {
 
 		System.out.println("Connection established\n");
 
-		//4. Block until you read a line from the client (Incoming data can read from the input stream)
-		//5. Echo back the line read from the client (Write the incoming data to the output stream)
-		//5a. Read data bytes sent from client using the input stream
-		//5b. Print the data received to the standard output
-		//5c. Send back the data received using the output stream
+		// BEGIN READING FROM SOCKET
+		boolean doneReading = false;
+		while (!doneReading){
+			try {
 
-		// FIXME
-		while (!timerDone){
-			int length = inStream.readInt();
-			if (length > 0) {
-				byte[] message = new byte[length];
-				inStream.readFully(message, 0, message.length);
+				int length = inStream.readInt();
+				if (length > 0) {
+					byte[] message = new byte[length];
+					inStream.readFully(message, 0, message.length);
+				}
+			} catch (EOFException e) {
+				doneReading = true;
 			}
-
-		}
-
-		// Close sockets
-		// FIXME
-		clientSoc.close();
-		serverSoc.close();
-		System.exit(100);
-
-/*
-
-		//1. Create a ServerSocket that listens on the specified port
-		ServerSocket serverSoc = new ServerSocket(serverPort);
-
-		System.out.println("Waiting for client connections");
-
-		//2. Block until a client requests a connection to this application
-		Socket clientSoc = serverSoc.accept();
-
-		//3. Get handles to the output and input stream of the socket
-		DataOutputStream outStream = new DataOutputStream(clientSoc.getOutputStream());
-		PrintWriter writer = new PrintWriter(outStream, true);
-
-		DataInputStream inStream = new DataInputStream(clientSoc.getInputStream());
-		BufferedReader reader = new BufferedReader(new InputStreamReader(clientSoc.getInputStream()));
-
-		System.out.println("Connection established\n");
-		String text;
-
-
-		//4. Block until you read a line from the client (Incoming data can read from the input stream)
-		//5. Echo back the line read from the client (Write the incoming data to the output stream)
-		//5a. Read data bytes sent from client using the input stream
-		//5b. Print the data received to the standard output
-		//5c. Send back the data received using the output stream
-		while ((text = reader.readLine()) != null){
-			System.out.println("Text received ==> " + text);
-			writer.println(text);
 		}
 
 		// Close sockets
 		clientSoc.close();
 		serverSoc.close();
-*/
-
+		System.exit(0);
 	}
 }
