@@ -1,2 +1,3 @@
 #!/bin/bash
-#java Iperfer -s -p <listen port>
+./PRINT_IP.sh >| TMP_IP
+java Iperfer -s -p 2000
