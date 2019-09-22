@@ -10,7 +10,6 @@ import java.util.Arrays;
 
 public class Iperfer {
 
-	static int num1000BytePacketsSent = 0;
 	static double rate = 0;
 	static boolean timerDone = false;
 
@@ -42,12 +41,8 @@ public class Iperfer {
 		}
 
 		// FIXME
-		System.out.println("Hitting the end of main()");
+		//System.out.println("Hitting the end of main()");
 		System.exit(0);
-	}
-
-	public static void stat() {
-		System.out.println("sent=" + num1000BytePacketsSent + " KB rate=" + rate + " Mbps");
 	}
 
 	public static void runClient(String[] args) throws IOException {
@@ -81,11 +76,11 @@ public class Iperfer {
 		};
 
 		Timer timer = new Timer("Timer");
-		System.out.println("Starting timer");
+		//System.out.println("Starting timer");
 
 		// Set up the connection
 		Socket clientSoc = new Socket(host, portNumber);
-		System.out.println("Connection Established\n");
+		//System.out.println("Connection Established\n");
 
 		// Get input and output stream
 		DataOutputStream outStream = new DataOutputStream(clientSoc.getOutputStream());
@@ -101,17 +96,27 @@ public class Iperfer {
 		// Schedule the timer task to start
 		timer.schedule(task, ((int)time * 1000));
 
+		// The number of packets we've sent
+		int num1000BytePacketsSent = 0;
+
 		// Wait until our timer is done
 		while(!timerDone) {
+
 			// Count up at every 1000 byte
 			num1000BytePacketsSent++;
-			rate = num1000BytePacketsSent / time / 1000 * 8;
 
 			// Write 1000 bytes to the writer
-			//writer.print(sendString);
 			outStream.writeInt(zeros.length);
 			outStream.write(zeros);
 		}
+
+		// Print stats
+		// 1KB is 1000 bytes, so our counter is the num KB sent
+		// 1 kilobyte (KB) = 1000 bytes (B)
+		// 1 megabyte (MB) = 1000 KB
+		// 1 byte (B) = 8 bits (b)
+		double rate = (((double)num1000BytePacketsSent * 0.008 ) / (double)time);
+		System.out.println("sent=" + num1000BytePacketsSent + " KB rate=" + rate + " Mbps");
 
 		// FIXME What do we have to close?
 		inStream.close();
@@ -139,7 +144,7 @@ public class Iperfer {
 
 		//1. Create a ServerSocket that listens on the specified port
 		ServerSocket serverSoc = new ServerSocket(portNumber);
-		System.out.println("Waiting for client connections");
+//		System.out.println("Waiting for client connections");
 
 		//2. Block until a client requests a connection to this application
 		Socket clientSoc = serverSoc.accept();
@@ -151,15 +156,17 @@ public class Iperfer {
 		DataInputStream inStream = new DataInputStream(clientSoc.getInputStream());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(clientSoc.getInputStream()));
 
-		System.out.println("Connection established\n");
+//		System.out.println("Connection established\n");
 
 		// BEGIN READING FROM SOCKET
 		boolean doneReading = false;
+		double bytesRcvd = 0;
 		while (!doneReading){
 			try {
 
 				int length = inStream.readInt();
 				if (length > 0) {
+					bytesRcvd += length;
 					byte[] message = new byte[length];
 					inStream.readFully(message, 0, message.length);
 				}
@@ -167,6 +174,9 @@ public class Iperfer {
 				doneReading = true;
 			}
 		}
+
+		// Print stats
+		System.out.println("received=" + (bytesRcvd / 1000) + " KB");
 
 		// Close sockets
 		clientSoc.close();
