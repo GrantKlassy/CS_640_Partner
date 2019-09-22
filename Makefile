@@ -1,2 +1,5 @@
-iperfer: Iperfer.java
+iperfer:
 	javac Iperfer.java
+
+clean:
+	rm *.class

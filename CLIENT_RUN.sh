@@ -1,2 +1,2 @@
 #!/bin/bash
-#java Iperfer -c -h <server hostname> -p <server port> -t <time>
+java Iperfer -c -h $(cat TMP_IP) -p 2000 -t 1
