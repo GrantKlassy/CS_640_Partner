@@ -123,7 +123,9 @@ public class Iperfer {
 		// 1 kilobyte (KB) = 1000 bytes (B)
 		// 1 megabyte (MB) = 1000 KB
 		// 1 byte (B) = 8 bits (b)
-		double rate = (((double)num1000BytePacketsSent * 0.008 ) / (double)time);
+
+//		double rate = (((double)num1000BytePacketsSent * 0.008 ) / (double)time);
+		double rate = (((double)num1000BytePacketsSent * 0.008 ) / (double)(timeDiff / 1000));
 		System.out.println("sent=" + num1000BytePacketsSent + " KB rate=" + rate + " Mbps");
 
 		// FIXME What do we have to close?
@@ -174,38 +176,23 @@ public class Iperfer {
 		boolean doneReading = false;
 		double bytesRcvd = 0;
 		byte[] message = new byte[1000];
-		//timeBefore = Instant.now().toEpochMilli();
 		timeBefore = System.currentTimeMillis();
 
 		while (!doneReading){
 			try {
-
-				//int length = inStream.readInt();
-				//if (length > 0) {
-
-					// First time init
-					//if (timeBefore == 0) {
-					//	timeBefore = Instant.now().toEpochMilli();
-					//}
-
-					inStream.readFully(message, 0, 1000);
-					bytesRcvd += 1000;
-				//}
+				inStream.readFully(message, 0, 1000);
+				bytesRcvd += 1000;
 			} catch (EOFException e) {
-				// Get the time after the connection has closed
-				//timeAfter = Instant.now().toEpochMilli();
 				timeAfter = System.currentTimeMillis();
 				doneReading = true;
 			}
 		}
 
 		// Get the difference in ms between start and end
-		System.out.println("Before: " + timeBefore);
-		System.out.println("After:  " + timeAfter);
 		long diffMs = timeAfter - timeBefore;
 
 		//  FIXME FIXME FIXME FIXME FIXME
-		diffMs -= 30;
+		//diffMs -= 30;
 
 		System.out.println(diffMs);
 
