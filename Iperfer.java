@@ -106,9 +106,8 @@ public class Iperfer {
 		// 1 megabyte (MB) = 1000 KB
 		// 1 byte (B) = 8 bits (b)
 
-//		double rate = (((double)num1000BytePacketsSent * 0.008 ) / (double)time);
 		double rate = (((double)num1000BytePacketsSent * 0.008 ) / (double)(timeDiff / 1000));
-		System.out.println("sent=" + num1000BytePacketsSent + " KB rate=" + rate + " Mbps");
+		System.out.println("sent=" + num1000BytePacketsSent + " KB rate=" + String.format("%.3f", rate) + " Mbps");
 
 		// FIXME What do we have to close?
 		inStream.close();
@@ -172,7 +171,7 @@ public class Iperfer {
 
 		// Print stats
 		double rate = ((double)bytesRcvd * 0.000008) / ((double)diffMs / (double)1000.0);
-		System.out.println("received=" + (bytesRcvd / 1000) + " KB rate=" + rate);
+		System.out.println("received=" + (int)(bytesRcvd/1000) + " KB rate=" + String.format("%.3f", rate) + " Mbps");
 
 		// Close sockets
 		clientSoc.close();
