@@ -11,18 +11,9 @@ import java.lang.*;
 
 public class Iperfer {
 
-	static double rate = 0;
 	static boolean timerDone = false;
 
 	public static void main(String[] args) throws IOException {
-
-		// Debug print arguments
-		boolean DEBUG = false;
-		if (DEBUG) {
-			for (int i = 0; i < args.length; i++) {
-				System.out.println("args[" + i + "] = " + args[i]);
-			}
-		}
 
 		// Get the client or server mode
 		String mode = args[0];
@@ -41,7 +32,6 @@ public class Iperfer {
 			System.exit(1);
 		}
 
-		// FIXME
 		//System.out.println("Hitting the end of main()");
 		System.exit(0);
 	}
@@ -66,8 +56,6 @@ public class Iperfer {
 			System.exit(1);
 		}
 
-		//System.out.println("Connecting to " + host + " @ port number " + portNumber);
-
 		// Start counting up to "time" seconds
 		// A TimerTask to exit after x seconds
 		TimerTask task = new TimerTask() {
@@ -75,13 +63,10 @@ public class Iperfer {
 				timerDone = true;
 			}
 		};
-
 		Timer timer = new Timer("Timer");
-		//System.out.println("Starting timer");
 
 		// Set up the connection
 		Socket clientSoc = new Socket(host, portNumber);
-		//System.out.println("Connection Established\n");
 
 		// Get input and output stream
 		DataOutputStream outStream = new DataOutputStream(clientSoc.getOutputStream());
@@ -96,8 +81,6 @@ public class Iperfer {
 
 		// Schedule the timer task to start
 		timer.schedule(task, ((int)time * 1000));
-
-
 		long timeBefore = System.currentTimeMillis();
 		long timeAfter = 0;
 
@@ -116,7 +99,6 @@ public class Iperfer {
 		}
 		timeAfter = System.currentTimeMillis();
 		long timeDiff = timeAfter - timeBefore;
-		System.out.println(timeDiff);
 
 		// Print stats
 		// 1KB is 1000 bytes, so our counter is the num KB sent
@@ -154,7 +136,6 @@ public class Iperfer {
 
 		//1. Create a ServerSocket that listens on the specified port
 		ServerSocket serverSoc = new ServerSocket(portNumber);
-//		System.out.println("Waiting for client connections");
 
 		//2. Block until a client requests a connection to this application
 		Socket clientSoc = serverSoc.accept();
@@ -165,8 +146,6 @@ public class Iperfer {
 
 		DataInputStream inStream = new DataInputStream(clientSoc.getInputStream());
 		BufferedReader reader = new BufferedReader(new InputStreamReader(clientSoc.getInputStream()));
-
-//		System.out.println("Connection established\n");
 
 		// Grab the time before we start reading
 		long timeBefore = 0;
@@ -190,12 +169,6 @@ public class Iperfer {
 
 		// Get the difference in ms between start and end
 		long diffMs = timeAfter - timeBefore;
-
-		//  FIXME FIXME FIXME FIXME FIXME
-		//diffMs -= 30;
-
-		System.out.println(diffMs);
-
 
 		// Print stats
 		double rate = ((double)bytesRcvd * 0.000008) / ((double)diffMs / (double)1000.0);
