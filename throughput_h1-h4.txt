@@ -1,0 +1,4 @@
+Client (h1)
+sent=81873 KB rate=21.129 Mbps
+Server (h4)
+received=81873 KB rate=18.845 Mbps
